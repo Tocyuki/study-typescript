@@ -1,13 +1,16 @@
-import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert';
+import {expect, haveResource, countResources} from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import * as Cdk from '../lib/cdk-stack';
 
-test('Empty Stack', () => {
+test('Vpc', () => {
     const app = new cdk.App();
-    // WHEN
     const stack = new Cdk.CdkStack(app, 'MyTestStack');
-    // THEN
-    expectCDK(stack).to(matchTemplate({
-      "Resources": {}
-    }, MatchStyle.EXACT))
+
+    expect(stack).to(countResources('AWS::EC2::VPC', 1));
+    expect(stack).to(haveResource('AWS::EC2::VPC', {
+        CidrBlock: '10.0.0.0/16',
+        Tags: [{
+            'Key': 'Name', 'Value': 'study-typescript-vpc'
+        }]
+    }));
 });
